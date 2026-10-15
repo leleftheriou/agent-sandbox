@@ -1,6 +1,3 @@
-# Workflow for the Test C sandbox repository (copy to .github/workflows/ci.yml in the sandbox, by hand).
-# No third-party actions: the commit is fetched with plain git (public repository, no token), and the tests run
-# on the runner's preinstalled Node. The job name below is the required check name (ci-test).
 name: ci
 on:
   push:
@@ -13,6 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - name: fetch the exact commit
+        run: |
+          git init -q src
+          cd src
+          git fetch -q --depth=1 "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" "$GITHUB_SHA"
+          git checkout -q FETCH_HEAD
       - name: test
         working-directory: src
         run: |
