@@ -13,14 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: fetch the exact commit
-        run: |
-          git init -q src
-          cd src
-          git fetch -q --depth=1 "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" "$GITHUB_SHA"
-          git checkout -q FETCH_HEAD
       - name: test
         working-directory: src
         run: |
           node --version
-          node --test test/
+          # fail if there is nothing to test: a green run with zero tests would prove nothing
+          ls test/*.test.js >/dev/null 2>&1 || { echo "no test files under test/"; exit 1; }
+          node --test 'test/**/*.test.js'
